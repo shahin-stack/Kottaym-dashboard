@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kottayam Retail | Executive Growth Dashboard</title>
+  <meta name="description"
+    content="Executive sales growth dashboard for Kottayam retail store tracking ₹6Cr to ₹10Cr growth trajectory." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">myG</div>
+      <div class="logo-text">
+        <span class="logo-main">myG Kottayam</span>
+        <span class="logo-sub">Retail Dashboard</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-tab="executive" onclick="switchTab('executive')">
+        <span class="nav-icon">◈</span>
+        <span>Executive Summary</span>
+      </button>
+      <a href="loyalty.html" class="nav-btn" style="text-decoration:none">
+        <span class="nav-icon">💎</span>
+        <span>Loyalty Analytics</span>
+      </a>
+      <a href="catchment.html" class="nav-btn" style="text-decoration:none">
+        <span class="nav-icon">📍</span>
+        <span>20km Catchment</span>
+      </a>
+      <a href="pincode_analysis.html" class="nav-btn" style="text-decoration:none">
+        <span class="nav-icon">📊</span>
+        <span>Pincode Analysis</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-meta">
+      <div class="meta-item">
+        <span class="meta-label">Last Updated</span>
+        <span class="meta-value" id="lastUpdated">--</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Financial Year</span>
+        <span class="meta-value">FY 2025–26</span>
+      </div>
+      <div class="goal-badge">
+        <span class="goal-label">Goal</span>
+        <span class="goal-value">₹10 Cr/mo</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════ MAIN -->
+  <main class="main-content">
+
+    <!-- TOP HEADER BAR -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <h1 class="page-title" id="pageTitle">Executive Summary</h1>
+        <span class="page-subtitle" id="pageSubtitle">₹6Cr → ₹10Cr Growth Trajectory • Kottayam Store</span>
+      </div>
+      <div class="top-bar-right">
+        <input type="file" id="dataUpload" accept=".xlsx,.csv,.xls" style="display:none"
+          onchange="processMasterData(event)">
+        <button onclick="document.getElementById('dataUpload').click()"
+          style="padding:6px 12px;background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);border-radius:4px;cursor:pointer;font-weight:600;margin-right:12px;font-size:12px;display:flex;align-items:center;gap:6px;"><span
+            style="font-size:14px">📤</span> Upload Master Data</button>
+        <div class="live-indicator">
+          <span class="pulse-dot"></span>
+          <span id="uploadStatus">Live</span>
+        </div>
+      </div>
+    </header>
+
+
+
+    <!-- ════════════════════════════════════ TAB: EXECUTIVE SUMMARY -->
+    <section class="tab-content active" id="tab-executive">
+
+      <!-- KPI ROW -->
+      <div class="kpi-row">
+        <div class="kpi-card kpi-primary">
+          <div class="kpi-icon">₹</div>
+          <div class="kpi-body">
+            <span class="kpi-label">Monthly Revenue (May 26)</span>
+            <span class="kpi-value" id="kpiRev">--</span>
+            <span class="kpi-delta" id="kpiRevDelta">--</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-body">
+            <span class="kpi-label">Gap to ₹10Cr Target</span>
+            <span class="kpi-value" id="kpiGap">--</span>
+            <span class="kpi-delta negative" id="kpiGapDelta">--</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-body">
+            <span class="kpi-label">Daily Avg Unique Customers (May)</span>
+            <span class="kpi-value" id="kpiFootfall">--</span>
+            <span class="kpi-delta" id="kpiFootfallDelta">--</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🧾</div>
+          <div class="kpi-body">
+            <span class="kpi-label">Average Transaction Value (May 26)</span>
+            <span class="kpi-value" id="kpiATV">--</span>
+            <span class="kpi-delta" id="kpiATVDelta">--</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🔄</div>
+          <div class="kpi-body">
+            <span class="kpi-label">Repeat Customer Rate</span>
+            <span class="kpi-value" id="kpiRepeat">--</span>
+            <span class="kpi-delta" id="kpiRepeatDelta">--</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🆕</div>
+          <div class="kpi-body">
+            <span class="kpi-label">New Customer Rate</span>
+            <span class="kpi-value" id="kpiNew">--</span>
+            <span class="kpi-delta" id="kpiNewDelta">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVENUE VS TARGET ROW -->
+      <div class="chart-row">
+        <div class="chart-card wide" style="grid-column: 1 / -1;">
+          <div class="chart-header">
+            <h3>Revenue vs Target — Monthly Trend</h3>
+            <span class="chart-badge">YoY Growth: +18.4%</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chartRevenueTarget" height="110"></canvas></div>
+        </div>
+      </div>
+
+      <!-- GROWTH LEVER TRACKER (dynamically populated from /api/data/growth_levers) -->
+      <div class="section-header">
+        <h2>⚡ Growth Lever Tracker — Path to ₹10 Cr</h2>
+        <span id="leverPeriod" style="font-size:11px;color:#64748b;margin-left:12px;"></span>
+      </div>
+      <div class="lever-grid">
+
+        <!-- LEVER 01: More Customers -->
+        <div class="lever-card" id="lever-customers">
+          <div class="lever-number">01</div>
+          <div class="lever-title">More Customers</div>
+          <div class="lever-metric-row">
+            <div class="lever-metric"><span class="lm-label">Current</span><span class="lm-val" id="lv-cust-current">—</span></div>
+            <div class="lever-metric"><span class="lm-label">Target</span><span class="lm-val" id="lv-cust-target">2,303/day (+25%)</span></div>
+          </div>
+          <div class="lever-progress-wrap">
+            <div class="lever-progress-bar" id="lv-cust-bar" style="--pct:0%"></div>
+            <span class="lever-pct" id="lv-cust-pct">…</span>
+          </div>
+          <div class="lever-status" id="lv-cust-status">Loading…</div>
+        </div>
+
+        <!-- LEVER 02: Higher Frequency -->
+        <div class="lever-card" id="lever-frequency">
+          <div class="lever-number">02</div>
+          <div class="lever-title">Higher Frequency</div>
+          <div class="lever-metric-row">
+            <div class="lever-metric"><span class="lm-label">Current</span><span class="lm-val" id="lv-freq-current">—</span></div>
+            <div class="lever-metric"><span class="lm-label">Target</span><span class="lm-val" id="lv-freq-target">2.8 visits/mo</span></div>
+          </div>
+          <div class="lever-progress-wrap">
+            <div class="lever-progress-bar" id="lv-freq-bar" style="--pct:0%"></div>
+            <span class="lever-pct" id="lv-freq-pct">…</span>
+          </div>
+          <div class="lever-status" id="lv-freq-status">Loading…</div>
+        </div>
+
+        <!-- LEVER 03: Larger Basket Size -->
+        <div class="lever-card" id="lever-atv">
+          <div class="lever-number">03</div>
+          <div class="lever-title">Larger Basket Size</div>
+          <div class="lever-metric-row">
+            <div class="lever-metric"><span class="lm-label">Current ATV</span><span class="lm-val" id="lv-atv-current">—</span></div>
+            <div class="lever-metric"><span class="lm-label">Target ATV</span><span class="lm-val" id="lv-atv-target">₹1,349 (+20%)</span></div>
+          </div>
+          <div class="lever-progress-wrap">
+            <div class="lever-progress-bar" id="lv-atv-bar" style="--pct:0%"></div>
+            <span class="lever-pct" id="lv-atv-pct">…</span>
+          </div>
+          <div class="lever-status" id="lv-atv-status">Loading…</div>
+        </div>
+
+      </div>
+
+
+    <!-- ════════════════════════════════════ TAB: SALES DEEP-DIVE -->
+    <section class="tab-content" id="tab-sales">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-body"><span class="kpi-label">Daily Avg Revenue (May MTD)</span><span class="kpi-value">₹18.9
+              L</span><span class="kpi-delta positive">103 invoices/day</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📆</div>
+          <div class="kpi-body"><span class="kpi-label">Best Month (Sep 25 — Onam)</span><span class="kpi-value">₹9.65
+              Cr</span><span class="kpi-delta positive">Peak: Onam season</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🏪</div>
+          <div class="kpi-body"><span class="kpi-label">Apr 26 Revenue (Latest Full)</span><span class="kpi-value">₹7.22
+              Cr</span><span class="kpi-delta positive">▲ 6.2% vs Mar 26</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📈</div>
+          <div class="kpi-body"><span class="kpi-label">ATV Growth (Aug→Apr)</span><span
+              class="kpi-value">₹9,224→₹18,723</span><span class="kpi-delta positive">▲ 103% in 9 months</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">👔</div>
+          <div class="kpi-body"><span class="kpi-label">Total Invoices (9 months)</span><span
+              class="kpi-value">40,299</span><span class="kpi-delta positive">Avg 149/day overall</span></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Hourly Sales Heatmap — This Week</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartHourly" height="110"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Day-wise Revenue Split</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartDaywise" height="140"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Category-wise Revenue Contribution</h3><span class="chart-badge">Top 5 Categories</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chartCategory" height="110"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>YoY Revenue Growth</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartYoY" height="140"></canvas></div>
+        </div>
+      </div>
+      <div class="section-header">
+        <h2>📊 Staff Shift Performance</h2>
+      </div>
+      <div class="table-card">
+        <table class="data-table" id="shiftTable">
+          <thead>
+            <tr>
+              <th>Shift</th>
+              <th>Staff Count</th>
+              <th>Avg Footfall</th>
+              <th>Conversion %</th>
+              <th>ATV (₹)</th>
+              <th>Revenue/Hr (₹)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="shiftTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════ TAB: CUSTOMER 360 -->
+    <section class="tab-content" id="tab-customer">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon">🆕</div>
+          <div class="kpi-body"><span class="kpi-label">New Customers/Mo</span><span class="kpi-value">1,240</span><span
+              class="kpi-delta positive">▲ 12.4% MoM</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🔁</div>
+          <div class="kpi-body"><span class="kpi-label">Repeat Rate (30d)</span><span
+              class="kpi-value">38.2%</span><span class="kpi-delta positive">▲ 2.1 pts</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">💎</div>
+          <div class="kpi-body"><span class="kpi-label">Avg CLV</span><span class="kpi-value">₹18,400</span><span
+              class="kpi-delta positive">▲ 8.3%</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">😞</div>
+          <div class="kpi-body"><span class="kpi-label">Churn Rate</span><span class="kpi-value">14.2%</span><span
+              class="kpi-delta negative">▲ 1.1 pts</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🌍</div>
+          <div class="kpi-body"><span class="kpi-label">NRI Segment Rev</span><span class="kpi-value">₹48 L</span><span
+              class="kpi-delta positive">Dec-Jan Peak</span></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Customer Cohort Retention (Monthly)</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartCohort" height="120"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>New vs Repeat Customers</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartNewRepeat" height="150"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Customer Frequency Distribution</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartFrequency" height="150"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>NRI Spending Cycle</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartNRI" height="150"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Loyalty Program Engagement</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartLoyalty" height="150"></canvas></div>
+        </div>
+      </div>
+      <div class="section-header">
+        <h2>📍 Local Demographic Penetration</h2>
+      </div>
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Customer Share %</th>
+              <th>Avg ATV (₹)</th>
+              <th>Delivery Orders</th>
+              <th>Growth MoM</th>
+            </tr>
+          </thead>
+          <tbody id="geoTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════ TAB: INVENTORY WAR ROOM -->
+    <section class="tab-content" id="tab-inventory">
+      <div class="kpi-row">
+        <div class="kpi-card kpi-danger">
+          <div class="kpi-icon">🚨</div>
+          <div class="kpi-body"><span class="kpi-label">Stock-out Incidents</span><span class="kpi-value">23</span><span
+              class="kpi-delta negative">▲ 4 this week</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🔄</div>
+          <div class="kpi-body"><span class="kpi-label">Inventory Turnover</span><span
+              class="kpi-value">5.8x/yr</span><span class="kpi-delta positive">▲ 0.4x MoM</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">☠️</div>
+          <div class="kpi-body"><span class="kpi-label">Dead Stock %</span><span class="kpi-value">7.3%</span><span
+              class="kpi-delta negative">▲ 0.8 pts</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🛡</div>
+          <div class="kpi-body"><span class="kpi-label">Shrinkage / Theft</span><span class="kpi-value">₹1.2
+              L</span><span class="kpi-delta negative">▲ 12% MoM</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📦</div>
+          <div class="kpi-body"><span class="kpi-label">SKUs Active</span><span class="kpi-value">4,820</span><span
+              class="kpi-delta positive">+140 new</span></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Category-wise Inventory Turnover & Margin</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartInvTurnover" height="110"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Stock-out Incidents by Category</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartStockout" height="140"></canvas></div>
+        </div>
+      </div>
+      <div class="section-header">
+        <h2>🏆 Top 20 SKUs — Revenue Contribution</h2>
+      </div>
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>SKU / Product</th>
+              <th>Category</th>
+              <th>Monthly Revenue</th>
+              <th>Margin %</th>
+              <th>Stock Days</th>
+              <th>Alert</th>
+            </tr>
+          </thead>
+          <tbody id="skuTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════ TAB: GROWTH EXPERIMENTS -->
+    <section class="tab-content" id="tab-growth">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon">📣</div>
+          <div class="kpi-body"><span class="kpi-label">Campaigns Running</span><span class="kpi-value">6</span><span
+              class="kpi-delta positive">2 performing well</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">💸</div>
+          <div class="kpi-body"><span class="kpi-label">Blended CAC</span><span class="kpi-value">₹284</span><span
+              class="kpi-delta positive">▼ 8% MoM (Good)</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📱</div>
+          <div class="kpi-body"><span class="kpi-label">WhatsApp Conv. Rate</span><span
+              class="kpi-value">14.2%</span><span class="kpi-delta positive">▲ 3.1 pts</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🏷</div>
+          <div class="kpi-body"><span class="kpi-label">Loyalty Members</span><span class="kpi-value">8,420</span><span
+              class="kpi-delta positive">▲ 340 this month</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🏪</div>
+          <div class="kpi-body"><span class="kpi-label">Competitor Price Index</span><span
+              class="kpi-value">96.4</span><span class="kpi-delta positive">We are 3.6% cheaper</span></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Marketing Channel ROI — CAC vs Revenue Attributed</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartMarketingROI" height="110"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Campaign Attribution</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartAttribution" height="140"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Predictive Forecast — Next 90 Days</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartForecast" height="150"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Delivery Revenue by Town</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartDelivery" height="150"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>A/B Experiments Status</h3>
+          </div>
+          <div class="ab-list" id="abList"></div>
+        </div>
+      </div>
+      <div class="section-header">
+        <h2>📡 Campaign Performance Tracker</h2>
+      </div>
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Campaign</th>
+              <th>Channel</th>
+              <th>Spend (₹)</th>
+              <th>Reach</th>
+              <th>Conversions</th>
+              <th>CAC (₹)</th>
+              <th>Revenue (₹)</th>
+              <th>ROAS</th>
+            </tr>
+          </thead>
+          <tbody id="campaignTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Anomaly Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modalTitle">Anomaly Detected</h3>
+        <button onclick="closeModal()" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="app2.js"></script>
+</body>
+
+</html>

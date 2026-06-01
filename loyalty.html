@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Kottayam Loyalty Analytics | ₹6Cr → ₹10Cr</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<link rel="stylesheet" href="loyalty.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-icon">myG</div>
+    <div><div class="logo-title">myG Kottayam</div><div class="logo-sub">Loyalty Analytics</div></div>
+  </div>
+  <nav class="nav">
+    <a class="nav-link active" href="#s1" onclick="showSection('s1',this)">📊 Cohort Retention</a>
+    <a class="nav-link" href="#s6" onclick="showSection('s6',this)">🔥 Base Reactivation</a>
+    <a class="nav-link" href="#s3" onclick="showSection('s3',this)">🛍 Category Analysis</a>
+    <a class="nav-link" href="#s4" onclick="showSection('s4',this)">📈 Performance Matrix</a>
+    <a class="nav-link" href="#s7" onclick="showSection('s7',this)">🤖 LSTM Forecast</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="goal-box"><span class="goal-label">Target</span><span class="goal-val">₹10 Cr/mo</span></div>
+    <div class="meta">Data: Aug 2025 – May 2026</div>
+    <div class="meta">23,741 Total Customers</div>
+    <a href="index.html" class="back-link">← Executive Dashboard</a>
+    <a href="catchment.html" class="back-link" style="margin-top:6px">📍 20km Catchment</a>
+    <a href="pincode_analysis.html" class="back-link" style="margin-top:6px">📊 Pincode Analysis</a>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 id="sectionTitle">Cohort Retention & Yearly Performance Matrix</h1>
+      <p class="topbar-sub">Kottayam Future Store • FY 2025–26 • Branch-filtered data</p>
+    </div>
+    <div class="topbar-right">
+      <div class="live-pill"><span class="pulse"></span>Live Data</div>
+    </div>
+  </header>
+
+  <!-- ══════════════════ S1: COHORT ══════════════════ -->
+  <section class="section active" id="s1">
+    <div class="kpi-row">
+      <div class="kpi-card accent-gold"><div class="kpi-lbl">Total Customers</div><div class="kpi-val">23,741</div><div class="kpi-sub">Aug 2025 – Apr 2026</div></div>
+      <div class="kpi-card accent-red"><div class="kpi-lbl">Single-Purchase Only</div><div class="kpi-val">19,359</div><div class="kpi-sub">81.5% — came once, never returned</div></div>
+      <div class="kpi-card accent-blue"><div class="kpi-lbl">Avg M1 Retention Rate</div><div class="kpi-val">5.7%</div><div class="kpi-sub">Avg across all monthly cohorts</div></div>
+      <div class="kpi-card accent-green"><div class="kpi-lbl">Returned Customers</div><div class="kpi-val">4,382</div><div class="kpi-sub">18.5% bought more than once</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Monthly Customer Cohort Retention Table</h2>
+        <span class="badge-info" style="background:transparent;border:none;color:#3b82f6;cursor:pointer"><span style="color:#64748b">— = data window not yet reached | All values from actual purchase data</span> &nbsp;&nbsp;&nbsp; 🔢 View Raw Counts</span>
+      </div>
+      <div class="table-wrap">
+        <table class="dtable" id="cohortTable">
+          <thead><tr>
+            <th>Cohort</th>
+            <th>Size</th>
+            <th>No Return Purchases</th>
+            <th>Month 0</th>
+            <th>Month 1</th>
+            <th>Month 2</th>
+            <th>Month 3</th>
+            <th>Month 4</th>
+            <th>Month 5</th>
+            <th>Month 6</th>
+          </tr></thead>
+          <tbody id="cohortBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><h2>Retention Decay Curve</h2></div>
+        <canvas id="chartCohortRetention" height="160"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Cumulative Cohort LTV (Lifetime Value)</h2></div>
+        <canvas id="chartCohortLTV" height="160"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-header"><h2>Key Findings &amp; Actions</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 16px;">
+        <div class="insight-box red" style="margin:0;">
+          <div class="insight-tag">CRITICAL FINDING</div>
+          <p><b>81.5% of customers (19,359)</b> visited on only one calendar day and never returned. Best M1 retention was Aug 2025 (Onam) at <b>11.7%</b>. Recent cohorts (Feb–Apr 2026) average only <b>4.4% M1 retention</b>.</p>
+        </div>
+        <div class="insight-box blue" style="margin:0;">
+          <div class="insight-tag">+5% M1 RETENTION IMPACT</div>
+          <p>If M1 retention improves from 5.3% → 10.3% across all monthly cohorts (~2,000 customers/month), at avg spend ₹29,280 that adds <b>+₹58.6L/month</b> = <b>+₹7Cr/year</b> directly to the ₹10Cr goal.</p>
+        </div>
+        <div class="insight-box green" style="margin:0;">
+          <div class="insight-tag">ACTION REQUIRED</div>
+          <p>Send a <b>Day-25 reactivation WhatsApp</b> to all first-time buyers before the 30-day mark. Offer a ₹200 voucher on 2nd purchase. Target: move M1 retention from 5.3% → 10% within 3 months.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S6: BASE REACTIVATION ══════════════════ -->
+  <section class="section" id="s6">
+    <div class="kpi-row">
+      <div class="kpi-card accent-blue">
+        <div class="kpi-lbl">Pre-April Baseline</div>
+        <div class="kpi-val">21,743</div>
+        <div class="kpi-sub">Customers acquired before Mar 31</div>
+      </div>
+      <div class="kpi-card accent-green">
+        <div class="kpi-lbl">April Reactivation</div>
+        <div class="kpi-val">595</div>
+        <div class="kpi-sub">2.74% of base revisited</div>
+      </div>
+      <div class="kpi-card accent-gold">
+        <div class="kpi-lbl">May Reactivation (MTD)</div>
+        <div class="kpi-val">187</div>
+        <div class="kpi-sub">0.86% of base revisited</div>
+      </div>
+      <div class="kpi-card accent-dim">
+        <div class="kpi-lbl">June Reactivation</div>
+        <div class="kpi-val">0</div>
+        <div class="kpi-sub">Upcoming</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>Reactivation Trend (Pre-April Base)</h2></div>
+      <canvas id="chartBaseReactivation" height="100"></canvas>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════ S3: CATEGORY ANALYSIS ══════════════════ -->
+  <section class="section" id="s3">
+    <div class="kpi-row">
+      <div class="kpi-card accent-blue">
+        <div class="kpi-lbl">Total Sales (Kottayam)</div>
+        <div class="kpi-val">₹59.04 Cr</div>
+        <div class="kpi-sub">Aug 2025 – Apr 2026 overall</div>
+      </div>
+      <div class="kpi-card accent-green">
+        <div class="kpi-lbl">Total Quantity Sold</div>
+        <div class="kpi-val">115,223</div>
+        <div class="kpi-sub">Items sold across categories</div>
+      </div>
+      <div class="kpi-card accent-gold">
+        <div class="kpi-lbl">Top Category by Share</div>
+        <div class="kpi-val">Telecom</div>
+        <div class="kpi-sub">43.4% of total sales (₹25.56 Cr)</div>
+      </div>
+      <div class="kpi-card accent-purple">
+        <div class="kpi-lbl">Projected Target Run-rate</div>
+        <div class="kpi-val">₹10.55 Cr</div>
+        <div class="kpi-sub">Future monthly growth target</div>
+      </div>
+    </div>
+
+    <!-- ── Category Comparison Tool ── -->
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <h2 style="font-size: 15px; background: linear-gradient(90deg, var(--blue), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🛍️ Category Performance Comparison Tool</h2>
+        <span class="badge-teal" id="compRangeBadge">Interactive Analyser</span>
+      </div>
+      
+      <!-- Controls -->
+      <div class="comp-controls-row">
+        <div class="control-group">
+          <label for="compType">Comparison Type</label>
+          <select id="compType" class="control-select">
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="ytd">YTD (Year-To-Date)</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label id="basePeriodLblSelect" for="basePeriod">Base Period</label>
+          <select id="basePeriod" class="control-select"></select>
+        </div>
+        
+        <div class="control-group">
+          <label id="compPeriodLblSelect" for="compPeriod">Comparison Period</label>
+          <select id="compPeriod" class="control-select"></select>
+        </div>
+        
+        <div class="control-group">
+          <label for="compCategory">Category</label>
+          <select id="compCategory" class="control-select">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+        
+        <div style="flex-shrink: 0; min-width: 120px;">
+          <button id="btnRunCompare" class="btn-compare" style="width: 100%;">Compare</button>
+        </div>
+      </div>
+      
+      <!-- Comparison KPI cards -->
+      <div class="kpi-row" style="margin-top: 24px; margin-bottom: 20px;">
+        <div class="kpi-card accent-blue">
+          <div class="kpi-lbl">Comp Sales (Period)</div>
+          <div class="kpi-val" id="compSalesVal">₹0.00 Cr</div>
+          <div class="kpi-sub" id="compSalesSub">vs Base: --</div>
+        </div>
+        <div class="kpi-card accent-green">
+          <div class="kpi-lbl">Comp Qty (Period)</div>
+          <div class="kpi-val" id="compQtyVal">0</div>
+          <div class="kpi-sub" id="compQtySub">vs Base: --</div>
+        </div>
+        <div class="kpi-card accent-gold">
+          <div class="kpi-lbl">Comp ASP (Avg Price)</div>
+          <div class="kpi-val" id="compAspVal">₹0</div>
+          <div class="kpi-sub" id="compAspSub">vs Base: --</div>
+        </div>
+        <div class="kpi-card accent-purple">
+          <div class="kpi-lbl">Current Comparison</div>
+          <div class="kpi-val" style="font-size: 13px; font-weight: 700; padding: 6px 0; font-family: var(--font);" id="compPeriodVal">-- vs --</div>
+          <div class="kpi-sub" id="compPeriodSub">Comparing selected timelines</div>
+        </div>
+      </div>
+
+      <!-- Scorecard Table -->
+      <div class="table-wrap" style="margin-top: 15px;">
+        <table class="dtable" id="scorecardTable">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Base Sales</th>
+              <th>Comp Sales</th>
+              <th>Sales Growth</th>
+              <th>Base Qty</th>
+              <th>Comp Qty</th>
+              <th>Qty Growth</th>
+              <th>Base ASP</th>
+              <th>Comp ASP</th>
+              <th>ASP Growth</th>
+              <th>Comp Share</th>
+            </tr>
+          </thead>
+          <tbody id="scorecardBody">
+            <!-- Table rows injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>Category Performance & Future Projections Table</h2>
+        </div>
+        <table class="dtable" id="categoryTable">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Total Qty</th>
+              <th>Total Sales</th>
+              <th>Contribution %</th>
+              <th>Avg Monthly Qty</th>
+              <th>Avg Monthly Sales</th>
+              <th style="color:#ea580c">Target Monthly Qty</th>
+              <th style="color:#ea580c">Target Monthly Sales</th>
+            </tr>
+          </thead>
+          <tbody id="categoryBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Sales Projections Comparison — Monthly Run-rate</h2>
+        </div>
+        <canvas id="chartCategoryProjections" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <h2>Category-wise Monthly Sales Trend (MoM) — Revenue (₹Cr)</h2>
+      </div>
+      <canvas id="chartCategoryMonthlyTrend" height="120"></canvas>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════ S4: PERFORMANCE MATRIX ══════════════════ -->
+  <section class="section" id="s4">
+    <div class="kpi-row">
+      <div class="kpi-card accent-blue"><div class="kpi-lbl">Total DB Members</div><div class="kpi-val">23,741</div><div class="kpi-sub">Cumulative since Aug 2025</div></div>
+      <div class="kpi-card accent-green"><div class="kpi-lbl">Best Repeat % (FMA26)</div><div class="kpi-val">17.4%</div><div class="kpi-sub">Target: 40% by Dec 2026</div></div>
+      <div class="kpi-card accent-amber"><div class="kpi-lbl">Best Retention %</div><div class="kpi-val">9.0%</div><div class="kpi-sub">FMA26 • Improving trend</div></div>
+      <div class="kpi-card accent-gold"><div class="kpi-lbl">Required Repeat % for ₹10Cr</div><div class="kpi-val">~40%</div><div class="kpi-sub">2.3× current rate</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Quarterly Performance Matrix</h2>
+      </div>
+      <table class="dtable" id="perfTable">
+        <thead><tr><th>Period</th><th>Total Members</th><th>QoQ %</th><th>New Members</th><th>Repeat Members</th><th>Repeat %</th><th>Retention %</th><th>Cum DB</th><th>Revenue (₹Cr)</th></tr></thead>
+        <tbody id="perfBody"></tbody>
+      </table>
+    </div>
+
+
+  </section>
+
+
+  <!-- ══════════════════ S7: LSTM SALES INTELLIGENCE ══════════════════ -->
+  <section class="section" id="s7">
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card accent-blue">
+        <div class="kpi-lbl">Jun 2026 Forecast</div>
+        <div class="kpi-val" id="lstm-kpi-jun">₹6.91 Cr</div>
+        <div class="kpi-sub">LSTM 30-day revenue projection</div>
+      </div>
+      <div class="kpi-card accent-gold">
+        <div class="kpi-lbl">Jul 2026 Forecast</div>
+        <div class="kpi-val" id="lstm-kpi-jul">₹7.48 Cr</div>
+        <div class="kpi-sub">Confidence: 88.3% — Improving trend</div>
+      </div>
+      <div class="kpi-card accent-green">
+        <div class="kpi-lbl">Model MAPE</div>
+        <div class="kpi-val" id="lstm-kpi-mape">4.7%</div>
+        <div class="kpi-sub">Mean Abs % Error — 60-day test window</div>
+      </div>
+      <div class="kpi-card accent-amber">
+        <div class="kpi-lbl">₹10 Cr ETA</div>
+        <div class="kpi-val" id="lstm-kpi-eta">Aug 2026</div>
+        <div class="kpi-sub">During Onam peak (YoY surge)</div>
+      </div>
+    </div>
+
+    <!-- Forecast Chart + Feature Importance -->
+    <div class="two-col" style="grid-template-columns:2fr 1fr;">
+      <div class="card">
+        <div class="card-header">
+          <h2>📈 Monthly Revenue Forecast — LSTM with 90% Confidence Band</h2>
+          <span class="badge-info">Actual vs Predicted vs Forecast</span>
+        </div>
+        <canvas id="chartLSTMForecast" height="170"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>🧠 Feature Importance</h2>
+          <span class="badge-teal">SHAP Values</span>
+        </div>
+        <div id="lstmFeatureImportance" style="padding:8px 0;"></div>
+      </div>
+    </div>
+
+    <!-- Category Forecast + Accuracy Table -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>🛍 Category-wise 3-Month LSTM Forecast</h2>
+          <span class="badge-green">Jun–Aug 2026</span>
+        </div>
+        <canvas id="chartLSTMCategory" height="220"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>📋 Model Performance Metrics</h2>
+          <span class="badge-red">Test Window: Jan–Apr 2026</span>
+        </div>
+        <div class="table-wrap">
+          <table class="dtable" id="lstmAccuracyTable">
+            <thead><tr>
+              <th>Month</th><th>Actual (₹Cr)</th><th>Predicted (₹Cr)</th><th>Error %</th><th>Status</th>
+            </tr></thead>
+            <tbody id="lstmAccuracyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Row -->
+    <div class="card">
+      <div class="card-header"><h2>🤖 LSTM Model Insights & Recommendations</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:8px 0;">
+        <div class="insight-box blue" style="margin:0;">
+          <div class="insight-tag">TOP DRIVER</div>
+          <p><b>Repeat Purchase Rate</b> is the #1 LSTM predictor (SHAP: 0.38). Every +1% in monthly repeat rate adds an estimated <b>₹14L to monthly revenue</b>. Current: 9% → Target: 15% by Aug 2026.</p>
+        </div>
+        <div class="insight-box green" style="margin:0;">
+          <div class="insight-tag">SEASONALITY SIGNAL</div>
+          <p>The model detects a <b>Onam-equivalent spike window in Aug–Sep 2026</b>. Pre-stocking and loyalty reward campaigns should be live by <b>July 15</b> to capture peak demand.</p>
+        </div>
+        <div class="insight-box red" style="margin:0;">
+          <div class="insight-tag">RISK FLAG</div>
+          <p>If new customer acquisition drops below <b>1,800/month</b>, the LSTM forecast degrades to ₹5.8 Cr by Sep 2026 — <b>₹4.2 Cr short</b> of the ₹10 Cr target. Maintain acquisition velocity.</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+</main>
+
+<script src="loyalty_data.js"></script>
+<script src="loyalty.js"></script>
+</body>
+</html>

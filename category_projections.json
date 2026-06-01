@@ -1,0 +1,338 @@
+{
+  "OTHERS": {
+    "total_qty": 22391,
+    "total_sales_cr": 0.254,
+    "avg_qty": 2488,
+    "avg_sales_cr": 0.028,
+    "recent_avg_qty": 1274,
+    "recent_avg_sales_cr": 0.024,
+    "proj_qty": 1764,
+    "proj_sales_cr": 0.033,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 1639,
+        "sales_cr": 0.0
+      },
+      "2025-09": {
+        "qty": 3407,
+        "sales_cr": 0.006
+      },
+      "2025-10": {
+        "qty": 2110,
+        "sales_cr": 0.057
+      },
+      "2025-11": {
+        "qty": 6233,
+        "sales_cr": 0.07
+      },
+      "2025-12": {
+        "qty": 2267,
+        "sales_cr": 0.035
+      },
+      "2026-01": {
+        "qty": 2914,
+        "sales_cr": 0.013
+      },
+      "2026-02": {
+        "qty": 1317,
+        "sales_cr": 0.034
+      },
+      "2026-03": {
+        "qty": 1289,
+        "sales_cr": 0.0
+      },
+      "2026-04": {
+        "qty": 1215,
+        "sales_cr": 0.038
+      }
+    }
+  },
+  "CONSUMER ELECTRONICS": {
+    "total_qty": 35617,
+    "total_sales_cr": 23.443,
+    "avg_qty": 3957,
+    "avg_sales_cr": 2.605,
+    "recent_avg_qty": 3345,
+    "recent_avg_sales_cr": 2.825,
+    "proj_qty": 4633,
+    "proj_sales_cr": 3.913,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 7580,
+        "sales_cr": 2.82
+      },
+      "2025-09": {
+        "qty": 5868,
+        "sales_cr": 3.782
+      },
+      "2025-10": {
+        "qty": 2293,
+        "sales_cr": 1.703
+      },
+      "2025-11": {
+        "qty": 3852,
+        "sales_cr": 2.38
+      },
+      "2025-12": {
+        "qty": 3153,
+        "sales_cr": 2.515
+      },
+      "2026-01": {
+        "qty": 2835,
+        "sales_cr": 1.768
+      },
+      "2026-02": {
+        "qty": 2732,
+        "sales_cr": 1.954
+      },
+      "2026-03": {
+        "qty": 3618,
+        "sales_cr": 2.975
+      },
+      "2026-04": {
+        "qty": 3686,
+        "sales_cr": 3.546
+      }
+    }
+  },
+  "ACCESSORIES": {
+    "total_qty": 20844,
+    "total_sales_cr": 2.732,
+    "avg_qty": 2316,
+    "avg_sales_cr": 0.304,
+    "recent_avg_qty": 1496,
+    "recent_avg_sales_cr": 0.237,
+    "proj_qty": 2072,
+    "proj_sales_cr": 0.329,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 2346,
+        "sales_cr": 0.28
+      },
+      "2025-09": {
+        "qty": 4189,
+        "sales_cr": 0.337
+      },
+      "2025-10": {
+        "qty": 2637,
+        "sales_cr": 0.331
+      },
+      "2025-11": {
+        "qty": 3005,
+        "sales_cr": 0.385
+      },
+      "2025-12": {
+        "qty": 2013,
+        "sales_cr": 0.359
+      },
+      "2026-01": {
+        "qty": 2166,
+        "sales_cr": 0.33
+      },
+      "2026-02": {
+        "qty": 1653,
+        "sales_cr": 0.242
+      },
+      "2026-03": {
+        "qty": 1506,
+        "sales_cr": 0.256
+      },
+      "2026-04": {
+        "qty": 1329,
+        "sales_cr": 0.213
+      }
+    }
+  },
+  "IT": {
+    "total_qty": 1393,
+    "total_sales_cr": 6.052,
+    "avg_qty": 155,
+    "avg_sales_cr": 0.672,
+    "recent_avg_qty": 108,
+    "recent_avg_sales_cr": 0.534,
+    "proj_qty": 150,
+    "proj_sales_cr": 0.739,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 153,
+        "sales_cr": 0.697
+      },
+      "2025-09": {
+        "qty": 231,
+        "sales_cr": 1.107
+      },
+      "2025-10": {
+        "qty": 224,
+        "sales_cr": 0.769
+      },
+      "2025-11": {
+        "qty": 172,
+        "sales_cr": 0.615
+      },
+      "2025-12": {
+        "qty": 142,
+        "sales_cr": 0.657
+      },
+      "2026-01": {
+        "qty": 147,
+        "sales_cr": 0.604
+      },
+      "2026-02": {
+        "qty": 128,
+        "sales_cr": 0.555
+      },
+      "2026-03": {
+        "qty": 116,
+        "sales_cr": 0.581
+      },
+      "2026-04": {
+        "qty": 80,
+        "sales_cr": 0.466
+      }
+    }
+  },
+  "TELECOM": {
+    "total_qty": 8500,
+    "total_sales_cr": 25.558,
+    "avg_qty": 944,
+    "avg_sales_cr": 2.84,
+    "recent_avg_qty": 676,
+    "recent_avg_sales_cr": 2.426,
+    "proj_qty": 936,
+    "proj_sales_cr": 3.361,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 904,
+        "sales_cr": 2.125
+      },
+      "2025-09": {
+        "qty": 1716,
+        "sales_cr": 4.373
+      },
+      "2025-10": {
+        "qty": 1141,
+        "sales_cr": 2.999
+      },
+      "2025-11": {
+        "qty": 958,
+        "sales_cr": 2.636
+      },
+      "2025-12": {
+        "qty": 932,
+        "sales_cr": 3.105
+      },
+      "2026-01": {
+        "qty": 821,
+        "sales_cr": 3.041
+      },
+      "2026-02": {
+        "qty": 661,
+        "sales_cr": 2.121
+      },
+      "2026-03": {
+        "qty": 729,
+        "sales_cr": 2.88
+      },
+      "2026-04": {
+        "qty": 638,
+        "sales_cr": 2.278
+      }
+    }
+  },
+  "VALUE ADDED SERVICE": {
+    "total_qty": 4357,
+    "total_sales_cr": 0.721,
+    "avg_qty": 484,
+    "avg_sales_cr": 0.08,
+    "recent_avg_qty": 446,
+    "recent_avg_sales_cr": 0.089,
+    "proj_qty": 618,
+    "proj_sales_cr": 0.124,
+    "monthly_data": {
+      "2025-08": {
+        "qty": 190,
+        "sales_cr": 0.02
+      },
+      "2025-09": {
+        "qty": 323,
+        "sales_cr": 0.04
+      },
+      "2025-10": {
+        "qty": 862,
+        "sales_cr": 0.109
+      },
+      "2025-11": {
+        "qty": 644,
+        "sales_cr": 0.11
+      },
+      "2025-12": {
+        "qty": 574,
+        "sales_cr": 0.097
+      },
+      "2026-01": {
+        "qty": 426,
+        "sales_cr": 0.078
+      },
+      "2026-02": {
+        "qty": 438,
+        "sales_cr": 0.078
+      },
+      "2026-03": {
+        "qty": 504,
+        "sales_cr": 0.097
+      },
+      "2026-04": {
+        "qty": 396,
+        "sales_cr": 0.092
+      }
+    }
+  },
+  "ENDPOINT PROTECTION": {
+    "total_qty": 1677,
+    "total_sales_cr": 0.093,
+    "avg_qty": 186,
+    "avg_sales_cr": 0.01,
+    "recent_avg_qty": 179,
+    "recent_avg_sales_cr": 0.009,
+    "proj_qty": 248,
+    "proj_sales_cr": 0.013,
+    "monthly_data": {
+      "2025-09": {
+        "qty": 78,
+        "sales_cr": 0.007
+      },
+      "2025-10": {
+        "qty": 307,
+        "sales_cr": 0.018
+      },
+      "2025-11": {
+        "qty": 251,
+        "sales_cr": 0.013
+      },
+      "2025-08": {
+        "qty": 16,
+        "sales_cr": 0.001
+      },
+      "2025-12": {
+        "qty": 264,
+        "sales_cr": 0.014
+      },
+      "2026-01": {
+        "qty": 223,
+        "sales_cr": 0.012
+      },
+      "2026-02": {
+        "qty": 124,
+        "sales_cr": 0.007
+      },
+      "2026-03": {
+        "qty": 128,
+        "sales_cr": 0.007
+      },
+      "2026-04": {
+        "qty": 286,
+        "sales_cr": 0.013
+      }
+    }
+  }
+}

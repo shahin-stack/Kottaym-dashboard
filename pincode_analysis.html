@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pincode Sales Analysis — 20km Catchment | Kottayam myG</title>
+  <meta name="description" content="Pincode-wise sales distribution analysis within 20km catchment of Kottayam myG Store." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet Heat -->
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="pincode_analysis.css" />
+</head>
+<body class="pa-body">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">myG</div>
+    <div class="logo-text">
+      <span class="logo-main">myG Kottayam</span>
+      <span class="logo-sub">Retail Dashboard</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">◈</span><span>Executive Summary</span></a>
+    <a href="loyalty.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">💎</span><span>Loyalty Analytics</span></a>
+    <a href="catchment.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">📍</span><span>20km Catchment</span></a>
+    <a href="pincode_analysis.html" class="nav-btn active" style="text-decoration:none"><span class="nav-icon">📊</span><span>Pincode Analysis</span></a>
+  </nav>
+  <div class="sidebar-meta">
+    <div class="meta-item"><span class="meta-label">Last Updated</span><span class="meta-value">May 2026</span></div>
+    <div class="goal-badge"><span class="goal-label">Target</span><span class="goal-value">₹10 Cr/mo</span></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content pa-main-content">
+
+  <header class="top-bar" style="margin-bottom: 24px; background: transparent; padding: 0;">
+    <div class="top-bar-left">
+      <h1 class="page-title">📊 Pincode Sales Analysis Dashboard</h1>
+      <span class="page-subtitle">20km Catchment · Database Count · Revenue Intelligence</span>
+    </div>
+    <div class="top-bar-right">
+      <div class="live-indicator"><span class="pulse-dot"></span><span>Live</span></div>
+    </div>
+  </header>
+
+  <!-- ══════ STEP 1: FILE UPLOAD ══════ -->
+  <section class="pa-upload-zone" id="uploadSection">
+    <div class="pa-section-title">
+      Step 1 — Upload Data Sources
+      <span class="badge badge-blue">Required</span>
+    </div>
+    <div class="pa-section-sub">
+      Upload your external pincode database (mobile + pincode) and sales report (transaction amount + date). The engine will cross-match and filter by 20km catchment automatically.
+    </div>
+
+    <div class="pa-upload-grid">
+      <!-- Card 1: Pincode Database -->
+      <div class="pa-upload-card" id="card-db" onclick="document.getElementById('fileDb').click()"
+           ondragover="dragOver(event,'card-db')" ondragleave="dragLeave('card-db')" ondrop="dropFile(event,'fileDb','card-db','dbName')">
+        <div class="pa-upload-icon">📋</div>
+        <div class="pa-upload-label">Pincode Database</div>
+        <div class="pa-upload-hint">CSV / Excel with Mobile Numbers &amp; Pincodes</div>
+        <span class="pa-upload-btn">Choose File</span>
+        <div class="pa-file-name" id="dbName">No file selected</div>
+      </div>
+      <input type="file" class="pa-file-input" id="fileDb" accept=".xlsx,.xls,.csv"
+             onchange="handleFile(this,'fileDb','card-db','dbName','db')" />
+
+      <!-- Card 2: Sales Report -->
+      <div class="pa-upload-card" id="card-sales" onclick="document.getElementById('fileSales').click()"
+           ondragover="dragOver(event,'card-sales')" ondragleave="dragLeave('card-sales')" ondrop="dropFile(event,'fileSales','card-sales','salesName')">
+        <div class="pa-upload-icon">💰</div>
+        <div class="pa-upload-label">Sales Report</div>
+        <div class="pa-upload-hint">CSV / Excel with Bill Amount, Date, Mobile/Pincode</div>
+        <span class="pa-upload-btn">Choose File</span>
+        <div class="pa-file-name" id="salesName">No file selected</div>
+      </div>
+      <input type="file" class="pa-file-input" id="fileSales" accept=".xlsx,.xls,.csv"
+             onchange="handleFile(this,'fileSales','card-sales','salesName','sales')" />
+
+      <!-- Card 3: Column Mapping Helper -->
+      <div class="pa-upload-card" style="border-style:solid;border-color:rgba(255,255,255,0.06);cursor:default;" onclick="">
+        <div class="pa-upload-icon">⚙️</div>
+        <div class="pa-upload-label">Expected Column Names</div>
+        <div style="font-size:11px;color:var(--pa-muted);text-align:left;margin-top:8px;line-height:1.8">
+          <b style="color:var(--pa-secondary)">Pincode DB:</b><br/>
+          &nbsp;mobile / phone / Mobile No<br/>
+          &nbsp;pincode / Pincode / PIN<br/><br/>
+          <b style="color:var(--pa-secondary)">Sales Report:</b><br/>
+          &nbsp;amount / bill_amount / Sold Price<br/>
+          &nbsp;pincode / Pincode / PIN<br/>
+          &nbsp;mobile / Customer Mobile<br/>
+          &nbsp;date / Date / invoice_date
+        </div>
+      </div>
+    </div>
+
+    <!-- Config Row -->
+    <div class="pa-config-row" style="justify-content: flex-end;">
+      <input type="hidden" id="cfgLat" value="9.5600" />
+      <input type="hidden" id="cfgLng" value="76.5150" />
+      <input type="hidden" id="cfgRadius" value="20" />
+      <input type="hidden" id="cfgMinSales" value="0" />
+      <button class="pa-run-btn" id="runBtn" onclick="runAnalysis()" disabled>
+        🔍 Run Analysis
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════ KPI CARDS ══════ -->
+  <section id="kpiSection" style="display:none; flex-direction: column; gap: 24px;">
+    
+    <!-- Row 1: Database Baseline -->
+    <div>
+      <div class="pa-card-group-title" style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--pa-secondary); letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">📋</span> Pincode Database Baseline (20km Catchment)
+      </div>
+      <div class="pa-kpi-row" style="display:grid; grid-template-columns: repeat(4,1fr); gap:14px;">
+
+        <div class="pa-kpi-card c-blue" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">📍</div>
+          <div class="pa-kpi-icon">📍</div>
+          <div class="pa-kpi-label">Pincodes in 20km</div>
+          <div class="pa-kpi-value" id="kpiPincodes">0</div>
+          <div class="pa-kpi-sub" id="kpiPincodesub">Within 20km radius</div>
+        </div>
+
+        <div class="pa-kpi-card c-blue" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">📊</div>
+          <div class="pa-kpi-icon">📊</div>
+          <div class="pa-kpi-label">Total Database Count</div>
+          <div class="pa-kpi-value" id="kpiDbTotal">0</div>
+          <div class="pa-kpi-sub">Total unique mobiles in DB</div>
+        </div>
+
+        <div class="pa-kpi-card c-teal" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">🔄</div>
+          <div class="pa-kpi-icon">🔄</div>
+          <div class="pa-kpi-label">Repeat Customers in DB</div>
+          <div class="pa-kpi-value" id="kpiDbRepeat">0</div>
+          <div class="pa-kpi-sub" style="color:#2dd4bf">In Pincode DB &amp; Kottayam Sales</div>
+        </div>
+
+        <div class="pa-kpi-card c-purple" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">🆕</div>
+          <div class="pa-kpi-icon">🆕</div>
+          <div class="pa-kpi-label">New Customers in DB</div>
+          <div class="pa-kpi-value" id="kpiDbNew">0</div>
+          <div class="pa-kpi-sub" style="color:#fdba74">In DB — Never bought at Kottayam</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Row 2: Revenue Intelligence -->
+    <div>
+      <div class="pa-card-group-title" style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--pa-secondary); letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">💵</span> Catchment Sales &amp; Revenue Intelligence
+      </div>
+      <div class="pa-kpi-row" style="display:grid; grid-template-columns: repeat(5,1fr); gap:14px;">
+
+        <!-- Total -->
+        <div class="pa-kpi-card c-blue" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">💰</div>
+          <div class="pa-kpi-icon">💰</div>
+          <div class="pa-kpi-label">Total Catchment Sales</div>
+          <div class="pa-kpi-value" id="kpiSalesTotal">₹0</div>
+          <div class="pa-kpi-sub">Repeat + New revenue</div>
+        </div>
+
+        <!-- Repeat Sales -->
+        <div class="pa-kpi-card c-teal" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">🔄</div>
+          <div class="pa-kpi-icon">🔄</div>
+          <div class="pa-kpi-label">Sales — Repeat Customers</div>
+          <div class="pa-kpi-value" id="kpiSalesRepeat">₹0</div>
+          <div class="pa-kpi-sub" id="kpiSalesRepeatSub">Repeat customer revenue</div>
+        </div>
+
+        <!-- Avg Sale / Repeat Customer -->
+        <div class="pa-kpi-card" style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(20,184,166,0.04));border:1px solid rgba(20,184,166,0.28);">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">📐</div>
+          <div class="pa-kpi-icon">📐</div>
+          <div class="pa-kpi-label">Avg Sale / Repeat Buyer</div>
+          <div class="pa-kpi-value" id="kpiAvgRepSale" style="color:#14b8a6">₹0</div>
+          <div class="pa-kpi-sub" id="kpiAvgRepSaleSub" style="color:rgba(20,184,166,0.75)">Repeat Sales ÷ Buyers</div>
+        </div>
+
+        <!-- New Sales -->
+        <div class="pa-kpi-card c-amber" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">✨</div>
+          <div class="pa-kpi-icon">✨</div>
+          <div class="pa-kpi-label">Sales — New Customers</div>
+          <div class="pa-kpi-value" id="kpiSalesNew">₹0</div>
+          <div class="pa-kpi-sub" id="kpiSalesNewSub">New customer revenue</div>
+        </div>
+
+        <!-- Avg Sale / New Customer -->
+        <div class="pa-kpi-card" style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.28);">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">🆕</div>
+          <div class="pa-kpi-icon">🆕</div>
+          <div class="pa-kpi-label">Avg Sale / New Buyer</div>
+          <div class="pa-kpi-value" id="kpiAvgNewSale" style="color:#f59e0b">₹0</div>
+          <div class="pa-kpi-sub" id="kpiAvgNewSaleSub" style="color:rgba(245,158,11,0.75)">New Sales ÷ Buyers</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Row 3: Catchment Buyers & Efficiency -->
+    <div>
+      <div class="pa-card-group-title" style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--pa-secondary); letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">👥</span> Catchment Buyers &amp; Spend Efficiency
+      </div>
+      <div class="pa-kpi-row" style="display:grid; grid-template-columns: repeat(4,1fr); gap:14px;">
+
+        <div class="pa-kpi-card c-purple" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">👥</div>
+          <div class="pa-kpi-icon">👥</div>
+          <div class="pa-kpi-label">Total Catchment Buyers</div>
+          <div class="pa-kpi-value" id="kpiBuyersTotal">0</div>
+          <div class="pa-kpi-sub">Repeat + New unique buyers</div>
+        </div>
+
+        <div class="pa-kpi-card c-amber" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">📈</div>
+          <div class="pa-kpi-icon">📈</div>
+          <div class="pa-kpi-label">Overall Avg Sale / Buyer</div>
+          <div class="pa-kpi-value" id="kpiAoV">₹0</div>
+          <div class="pa-kpi-sub">Total Sales ÷ Total Buyers</div>
+        </div>
+
+        <div class="pa-kpi-card c-teal" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">🔄</div>
+          <div class="pa-kpi-icon">🔄</div>
+          <div class="pa-kpi-label">Repeat Buyers (Sales Data)</div>
+          <div class="pa-kpi-value" id="kpiRepeatBuyers">0</div>
+          <div class="pa-kpi-sub">
+            <span style="color:#2dd4bf">Also bought Post-Apr 28: <b id="kpiRepBPost">0</b></span>
+          </div>
+        </div>
+
+        <div class="pa-kpi-card c-green" style="position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-18px;right:-18px;font-size:52px;opacity:0.06;pointer-events:none">✨</div>
+          <div class="pa-kpi-icon">✨</div>
+          <div class="pa-kpi-label">New Buyers (Sales Data)</div>
+          <div class="pa-kpi-value" id="kpiNewBuyers">0</div>
+          <div class="pa-kpi-sub">
+            <span style="color:#4ade80">First purchase Post-Apr 28: <b id="kpiNewBPost">0</b></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+
+
+
+  <!-- ══════ MAP ══════ -->
+  <section id="mapSection" style="display:none">
+    <div class="pa-map-card">
+      <div class="pa-map-header">
+        <div class="pa-chart-title">🗺️ Sales Heatmap — 20km Catchment</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="badge badge-teal">Leaflet Map</span>
+          <div id="mapLegend" style="display:flex;gap:12px;font-size:11px;color:var(--pa-muted)">
+            <span>🔴 High Revenue</span>
+            <span>🟡 Medium</span>
+            <span>🔵 Low</span>
+          </div>
+        </div>
+      </div>
+      <div id="pincodeMap"></div>
+    </div>
+  </section>
+
+  <!-- ══════ MONTHLY SALES TREND ══════ -->
+  <section id="trendSection" style="display:none; margin-top: 24px;">
+    <div class="pa-chart-card" style="background: var(--pa-card); border: 1px solid var(--pa-border); border-radius: 16px; padding: 24px;">
+      <div class="pa-chart-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div class="pa-chart-title" style="font-size: 14px; font-weight: 700; color: var(--pa-text);">📈 Monthly Sales Trend (Catchment Revenue)</div>
+        <span class="badge badge-purple">Monthly Trend</span>
+      </div>
+      <div class="pa-chart-wrap" style="height: 320px; position: relative;">
+        <canvas id="chartTrend"></canvas>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ══════ MAIN SUMMARY TABLE ══════ -->
+  <section id="tableSection" style="display:none">
+    <div class="pa-table-section">
+      <div class="pa-table-header">
+        <div>
+          <div class="pa-section-title">
+            📋 Pincode Summary Table
+            <span class="badge badge-teal">Full Report</span>
+          </div>
+          <div style="font-size:12px;color:var(--pa-muted);margin-top:3px">
+            Pincode | Database Count | Total Sales | AOV | Distance
+          </div>
+        </div>
+        <div class="pa-table-actions">
+          <input type="text" class="pa-search-input" id="tableSearch" placeholder="🔍 Search pincode or area…" oninput="filterTable()" />
+          <button class="pa-export-btn" onclick="exportToExcel()">⬇ Export Excel</button>
+        </div>
+      </div>
+      <div class="pa-table-wrap">
+        <table class="pa-table" id="summaryTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">Rank</th>
+              <th onclick="sortTable(1)">Pincode</th>
+              <th onclick="sortTable(2)">Area / Location</th>
+              <th onclick="sortTable(3)">Distance</th>
+              <th onclick="sortTable(4)">Database Count</th>
+              <th onclick="sortTable(5)">Total Sales</th>
+              <th onclick="sortTable(6)">Buying Customers</th>
+              <th onclick="sortTable(7)">Avg Sale / Customer</th>
+              <th onclick="sortTable(8)">Sales Share %</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ INSIGHTS ══════ -->
+  <section id="insightsSection" style="display:none">
+    <div class="pa-section-title" style="margin-bottom:16px">
+      🔍 Automated Insights
+      <span class="badge badge-purple">AI-Generated</span>
+    </div>
+    <div class="pa-insights-grid" id="insightsGrid"></div>
+  </section>
+
+  <!-- ══════ EMPTY STATE ══════ -->
+  <section id="emptyState">
+    <div class="pa-empty">
+      <div class="pa-empty-icon">📊</div>
+      <div class="pa-empty-title">Upload your data to get started</div>
+      <div class="pa-empty-sub">
+        Upload the Pincode Database and Sales Report above, then click <strong>Run Analysis</strong>.<br/>
+        The dashboard will automatically filter pincodes within 20km and generate all charts, tables and insights.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Loading Overlay -->
+<div class="pa-loading-overlay" id="loadingOverlay">
+  <div class="pa-spinner"></div>
+  <div class="pa-loading-text">Crunching the Numbers…</div>
+  <div class="pa-loading-sub" id="loadingMsg">Processing files and matching pincodes</div>
+</div>
+
+<script src="pincode_analysis.js"></script>
+</body>
+</html>

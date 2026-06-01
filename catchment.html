@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>20km Catchment Intelligence | Kottayam myG Store</title>
+  <meta name="description" content="20km catchment pincode intelligence module for Kottayam myG Store." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="catchment.css" />
+  <style>
+    /* Marketing Tracker Styles */
+    .mktg-tracker { background: rgba(59,130,246,0.03); border: 1px solid rgba(59,130,246,0.1); border-radius: 12px; margin: 20px 28px; padding: 24px; }
+    .upload-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .upload-card { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 20px; text-align: center; transition: all 0.2s; }
+    .upload-card:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); }
+    .upload-card h3 { font-size: 15px; color: var(--text-primary); margin-bottom: 8px; }
+    .upload-card p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 16px; }
+    .upload-btn { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; padding: 8.5px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-block; }
+    .file-input { display: none; }
+    .process-bar { display: flex; justify-content: flex-end; align-items: center; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+    .process-btn { background: var(--primary); color: #fff; border: none; padding: 11px 26px; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+    .process-btn:disabled { background: var(--border); cursor: not-allowed; box-shadow: none; }
+    
+    .mktg-results { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .metric-box { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .metric-title { font-size: 12.5px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+    .metric-val { font-size: 32px; font-weight: 800; color: var(--text-primary); margin: 8px 0; }
+    .metric-sub { font-size: 14.5px; color: var(--text-secondary); font-weight: 500; }
+    
+    .loading-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(15,23,42,0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; color: #fff; }
+    .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">myG</div>
+    <div class="logo-text">
+      <span class="logo-main">myG Kottayam</span>
+      <span class="logo-sub">Retail Dashboard</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">◈</span><span>Executive Summary</span></a>
+    <a href="loyalty.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">💎</span><span>Loyalty Analytics</span></a>
+    <a href="catchment.html" class="nav-btn active" style="text-decoration:none"><span class="nav-icon">📍</span><span>20km Catchment</span></a>
+    <a href="pincode_analysis.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">📊</span><span>Pincode Analysis</span></a>
+  </nav>
+  <div class="sidebar-meta">
+    <div class="meta-item"><span class="meta-label">Last Updated</span><span class="meta-value">May 2026</span></div>
+    <div class="goal-badge"><span class="goal-label">Target</span><span class="goal-value">₹10 Cr/mo</span></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <h1 class="page-title">📍 20km Catchment Intelligence</h1>
+      <span class="page-subtitle">Mapping • Monitoring • Forecasting all revenue within 20km</span>
+    </div>
+    <div class="top-bar-right">
+      <div class="live-indicator"><span class="pulse-dot"></span><span>Live</span></div>
+    </div>
+  </header>
+
+  <!-- ══════ MARKETING ATTRIBUTION TRACKER ══════ -->
+  <div id="mktgTrackerWrap" style="padding:20px 28px 24px">
+
+    <!-- Section Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);margin:0;letter-spacing:-0.3px">
+          🎯 Marketing Attribution Tracker
+        </h2>
+        <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0">2-file attribution upload &mdash; QR/Campaign &amp; Sales match (auto-verified against Complete Base)</p>
+        <div id="baseLoadingStatus" style="font-size:12px;color:#94a3b8;margin:6px 0 0;font-weight:600;display:inline-flex;align-items:center;gap:6px">⏳ Auto-loading Kottayam Complete Data till April 27.xlsx...</div>
+      </div>
+      <span style="background:rgba(59,130,246,0.15);color:#60a5fa;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Live Attribution</span>
+    </div>
+
+    <!-- Upload Row (2 cards) -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px">
+
+      <!-- File 1: Marketing Data -->
+      <div id="card-mkt" style="background:rgba(59,130,246,0.04);border:2px dashed rgba(59,130,246,0.25);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s" onclick="document.getElementById('fileMarketing').click()">
+        <div style="font-size:28px;margin-bottom:8px">📱</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">1. Marketing Customer Data</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Customers acquired via QR / Campaigns</div>
+        <span style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;padding:7px 16px;border-radius:7px;font-size:11px;font-weight:700">Choose File</span>
+        <div id="mktName" style="margin-top:10px;font-size:11px;color:#22c55e;font-weight:600;min-height:16px"></div>
+        <input type="file" id="fileMarketing" class="file-input" accept=".xlsx,.xls,.csv" onchange="handleFile(this,'mktName','card-mkt','marketing')" />
+      </div>
+
+      <!-- File 2: Sales Report (Apr 28+) -->
+      <div id="card-sales" style="background:rgba(20,184,166,0.04);border:2px dashed rgba(20,184,166,0.25);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s" onclick="document.getElementById('filePost').click()">
+        <div style="font-size:28px;margin-bottom:8px">📈</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">2. Sales Report (Apr 28 Onwards)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px">All sales transactions from April 28+</div>
+        <span style="background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.3);color:#2dd4bf;padding:7px 16px;border-radius:7px;font-size:11px;font-weight:700">Choose File</span>
+        <div id="postName" style="margin-top:10px;font-size:11px;color:#22c55e;font-weight:600;min-height:16px"></div>
+        <input type="file" id="filePost" class="file-input" accept=".xlsx,.xls,.csv" onchange="handleFile(this,'postName','card-sales','post')" />
+      </div>
+
+    </div>
+
+    <!-- Run Button -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:24px">
+      <button id="processBtn" onclick="processData()" disabled
+        style="background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border:none;padding:12px 32px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.35);transition:all 0.2s;letter-spacing:0.3px">
+        🔍 Run Customer Attribution
+      </button>
+    </div>
+
+    <!-- ── KPI RESULTS (hidden until processed) ── -->
+    <div id="mktgResults" style="display:none">
+
+      <!-- 4 KPI Cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+
+        <!-- Card 1: Total Marketing Customers -->
+        <div style="background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(255,255,255,0.6));border:1px solid rgba(59,130,246,0.25);border-radius:16px;padding:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.02)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b82f6,#6366f1)"></div>
+          <div style="position:absolute;top:-10px;right:-10px;font-size:56px;opacity:0.04;pointer-events:none">📱</div>
+          <div style="font-size:11px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px">📱 Total Marketing Customers</div>
+          <div id="kpiMktgTotal" style="font-size:36px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:12px">0</div>
+          <div style="border-top:1px solid rgba(59,130,246,0.15);padding-top:12px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">🆕 New Customers</span>
+              <span id="kpiMktgNew" style="font-size:13px;font-weight:700;color:#15803d">0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">🔄 Repeat Customers</span>
+              <span id="kpiMktgRepeat" style="font-size:13px;font-weight:700;color:#b45309">0</span>
+            </div>
+          </div>
+          <div id="kpiMktgNewPct" style="font-size:11px;color:#2563eb;font-weight:600;margin-top:8px"></div>
+        </div>
+
+        <!-- Card 2: Purchased Customers -->
+        <div style="background:linear-gradient(135deg,rgba(20,184,166,0.08),rgba(255,255,255,0.6));border:1px solid rgba(20,184,166,0.25);border-radius:16px;padding:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.02)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#14b8a6,#06b6d4)"></div>
+          <div style="position:absolute;top:-10px;right:-10px;font-size:56px;opacity:0.04;pointer-events:none">🛂</div>
+          <div style="font-size:11px;font-weight:800;color:#0f766e;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px">🛂 Purchased Customers</div>
+          <div id="kpiPurchTotal" style="font-size:36px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:4px">0</div>
+          <div id="kpiPurchSales" style="font-size:16px;font-weight:800;color:#0f766e;margin-bottom:12px">₹0 Cr</div>
+          <div style="border-top:1px solid rgba(20,184,166,0.15);padding-top:12px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">🆕 New Purchased</span>
+              <span id="kpiPurchNewCount" style="font-size:13px;font-weight:700;color:#15803d">0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">🔄 Repeat Purchased</span>
+              <span id="kpiPurchRepCount" style="font-size:13px;font-weight:700;color:#b45309">0</span>
+            </div>
+          </div>
+          <div id="kpiPurchConvPct" style="font-size:11px;color:#0d9488;font-weight:600;margin-top:8px"></div>
+        </div>
+
+        <!-- Card 3: New Purchased Customers -->
+        <div style="background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(255,255,255,0.6));border:1px solid rgba(34,197,94,0.25);border-radius:16px;padding:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.02)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#22c55e,#4ade80)"></div>
+          <div style="position:absolute;top:-10px;right:-10px;font-size:56px;opacity:0.04;pointer-events:none">✨</div>
+          <div style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px">✨ New Purchased Customers</div>
+          <div id="kpiNewPurchCount" style="font-size:36px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:4px">0</div>
+          <div id="kpiNewPurchSales" style="font-size:16px;font-weight:800;color:#166534;margin-bottom:12px">₹0 Cr</div>
+          <div style="border-top:1px solid rgba(34,197,94,0.15);padding-top:12px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">Avg Sale / New Buyer</span>
+              <span id="kpiNewPurchAov" style="font-size:13px;font-weight:700;color:#15803d">₹0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">Conversion Rate</span>
+              <span id="kpiNewConvRate" style="font-size:13px;font-weight:700;color:#15803d">0%</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#16a34a;font-weight:600;margin-top:8px">First-time buyers at Kottayam store</div>
+        </div>
+
+        <!-- Card 4: Repeat Purchased Customers -->
+        <div style="background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(255,255,255,0.6));border:1px solid rgba(245,158,11,0.25);border-radius:16px;padding:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.02)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#f97316)"></div>
+          <div style="position:absolute;top:-10px;right:-10px;font-size:56px;opacity:0.04;pointer-events:none">🔄</div>
+          <div style="font-size:11px;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px">🔄 Repeat Purchased Customers</div>
+          <div id="kpiRepPurchCount" style="font-size:36px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:4px">0</div>
+          <div id="kpiRepPurchSales" style="font-size:16px;font-weight:800;color:#9a3412;margin-bottom:12px">₹0 Cr</div>
+          <div style="border-top:1px solid rgba(245,158,11,0.15);padding-top:12px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">Avg Sale / Repeat Buyer</span>
+              <span id="kpiRepPurchAov" style="font-size:13px;font-weight:700;color:#b45309">₹0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:#475569;font-weight:500">Conversion Rate</span>
+              <span id="kpiRepConvRate" style="font-size:13px;font-weight:700;color:#b45309">0%</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#ea580c;font-weight:600;margin-top:8px">Re-engaged via marketing campaign</div>
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- ══════ 1. 20KM CATCHMENT AT A GLANCE ══════ -->
+  <div style="padding:0 28px 20px">
+    <div class="section-header"><h2>1. 20km Catchment At a Glance</h2></div>
+    
+    <div class="kpi-row" style="margin-bottom:20px">
+      <div class="kpi-card kpi-primary">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Total Catchment Customers</span>
+          <span class="kpi-value" id="glanceTotalCust">0</span>
+          <span class="kpi-delta positive">Unique Historical Base</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🏠</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Core (0–5km) Share</span>
+          <span class="kpi-value" id="glanceCoreShare">47.0%</span>
+          <span class="kpi-delta positive" id="kpiCoreStatus">▲ Core Healthy</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🟢</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Growth Corridors</span>
+          <span class="kpi-value">5</span>
+          <span class="kpi-delta positive">Pincodes growing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr>
+          <th>Ring</th><th>Key Pincodes</th><th>Current Role</th><th>Revenue Share</th><th>Target Share</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="ring-badge ring-1">0–5km Core</span></td>
+            <td><code class="pcode">686001–686006</code></td>
+            <td>Base protection, daily needs</td>
+            <td><strong style="color:#3b82f6" id="tblPct1">47.0%</strong></td>
+            <td>55%</td>
+            <td><span class="badge badge-green">Healthy</span></td>
+          </tr>
+          <tr>
+            <td><span class="ring-badge ring-2">5–10km</span></td>
+            <td><code class="pcode">686631, 686651, 686502</code></td>
+            <td>Suburban families</td>
+            <td><strong style="color:#ea580c" id="tblPct2">11.0%</strong></td>
+            <td>27%</td>
+            <td><span class="badge badge-yellow">Under Target</span></td>
+          </tr>
+          <tr>
+            <td><span class="ring-badge ring-3">10–15km</span></td>
+            <td><code class="pcode">686563–686641</code></td>
+            <td>Kumarakom tourism, delivery</td>
+            <td><strong style="color:#14b8a6" id="tblPct3">6.7%</strong></td>
+            <td>13%</td>
+            <td><span class="badge badge-yellow">Under Target</span></td>
+          </tr>
+          <tr>
+            <td><span class="ring-badge ring-4">15–20km</span></td>
+            <td><code class="pcode">686101–686634</code></td>
+            <td>Changanassery, Kuravilangad</td>
+            <td><strong style="color:#f59e0b" id="tblPct4">33.8%</strong></td>
+            <td>5%</td>
+            <td><span class="badge badge-green">On Track</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</main>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <h2 style="margin:0;font-size:18px">Processing Data...</h2>
+  <p style="color:var(--text-muted);font-size:13px;margin-top:8px">Running Attribution Logic</p>
+</div>
+
+<script src="catchment_data.js"></script>
+<script src="catchment.js"></script>
+</body>
+</html>
