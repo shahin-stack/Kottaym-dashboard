@@ -7,6 +7,7 @@
 
 from flask import Flask, jsonify, render_template_string, send_from_directory, Response
 import os
+import json
 import pandas as pd
 
 app = Flask(__name__, static_folder='.', static_url_path='')
@@ -21,6 +22,18 @@ _HIST_CACHE = None   # will hold {'count': N, 'mobiles': [...]} or error dict
 def _load_historical_customers():
     """Load and cache unique customer mobiles up to Apr 30 2026."""
     global _HIST_CACHE
+    
+    # ── Check precomputed JSON cache first ────────────────────────────
+    cache_name = 'historical_customers_cache.json'
+    if os.path.exists(cache_name):
+        try:
+            with open(cache_name, 'r') as f:
+                _HIST_CACHE = json.load(f)
+            print(f'[OK] Historical baseline loaded from {cache_name}')
+            return
+        except Exception as exc:
+            print(f'[WARN] Failed to load {cache_name}: {exc}. Falling back to Excel.')
+
     fname = 'Kottayam Future Complete Data.xlsx'
     if not os.path.exists(fname):
         _HIST_CACHE = {'error': f'{fname} not found', 'mobiles': [], 'count': 0}
@@ -83,6 +96,18 @@ TARGETS = {
 def _load_growth_levers():
     """Compute growth lever KPIs from the full Excel dataset."""
     global _LEVERS_CACHE
+    
+    # ── Check precomputed JSON cache first ────────────────────────────
+    cache_name = 'growth_levers_cache.json'
+    if os.path.exists(cache_name):
+        try:
+            with open(cache_name, 'r') as f:
+                _LEVERS_CACHE = json.load(f)
+            print(f'[OK] Growth Levers loaded from {cache_name}')
+            return
+        except Exception as exc:
+            print(f'[WARN] Failed to load {cache_name}: {exc}. Falling back to Excel.')
+
     fname = 'Kottayam Future Complete Data.xlsx'
     if not os.path.exists(fname):
         _LEVERS_CACHE = {'error': f'{fname} not found'}
@@ -662,6 +687,17 @@ def api_base_mobiles():
     if _BASE_MOBILES_CACHE is not None:
         return jsonify(_BASE_MOBILES_CACHE)
     
+    # ── Check precomputed JSON cache first ────────────────────────────
+    cache_name = 'base_mobiles_cache.json'
+    if os.path.exists(cache_name):
+        try:
+            with open(cache_name, 'r') as f:
+                _BASE_MOBILES_CACHE = json.load(f)
+            print(f'[OK] Base mobiles cache loaded from {cache_name}')
+            return jsonify(_BASE_MOBILES_CACHE)
+        except Exception as exc:
+            print(f'[WARN] Failed to load {cache_name}: {exc}. Falling back to Excel.')
+
     import os
     import pandas as pd
     fname = 'Kottayam Complete Data till April 27.xlsx'
