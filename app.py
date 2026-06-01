@@ -698,8 +698,6 @@ def api_base_mobiles():
         except Exception as exc:
             print(f'[WARN] Failed to load {cache_name}: {exc}. Falling back to Excel.')
 
-    import os
-    import pandas as pd
     fname = 'Kottayam Complete Data till April 27.xlsx'
     if not os.path.exists(fname):
         return jsonify({'error': f'{fname} not found'}), 404
